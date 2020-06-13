@@ -31,12 +31,17 @@ def get_special_paths(dirname):
 
 
 def copy_to(path_list, dest_dir):
-    # your code here
+    if not os.path.isdir(dest_dir): #os.path.isdir checks if something is a dir
+        os.makedirs(dest_dir)
+    for path in path_list:
+        shutil.copy(path, dest_dir) 
     return
 
 
 def zip_to(path_list, dest_zip):
-    # your code here
+    for path in path_list:
+        print(f'zip -j {dest_zip} {path}')
+        subprocess.run(['zip', '-j', dest_zip, path]) #google this !!!!
     return
 
 
@@ -60,9 +65,16 @@ def main(args):
 
     if len(sys.argv) < 1:
         parser.print_usage()
-    get_special_paths(ns.from_dir) #ns.from_dir this get files in directory given
-
-
+    path_list = get_special_paths(ns.from_dir) #ns.from_dir this get files in directory given
+    if ns.todir: 
+        copy_to(path_list, ns.todir)
+        # print(ns.todir)
+    elif ns.tozip:
+        zip_to(path_list, ns.tozip)
+    else:
+        print(*path_list, sep='\n')
+        # for path in path_list:
+        #     print(path)
 
 if __name__ == "__main__":
     main(sys.argv[1:])
