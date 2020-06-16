@@ -25,13 +25,21 @@ def get_special_paths(dirname):
         special_file = re.findall(r'__(\w+)__', file)
         # print(special_file)
         if special_file:
-            specail_dir_files.append(os.path.abspath(file)) #os.path.abspath gets the absolute path for file
+            # os.path.abspath gets the absolute path for file
+            # os.path.join joins directory and file
+            specail_dir_files.append(os.path.abspath(
+                                     os.path.join(dirname, file)))
     # print(specail_dir_files)
     return specail_dir_files
 
 
 def copy_to(path_list, dest_dir):
-    if not os.path.isdir(dest_dir): #os.path.isdir checks if something is a dir
+    """Given a list of paths and destination directory, 
+    copies those into destination;
+    if destination does not exist creates one
+    """
+    # os.path.isdir checks if something is a dir
+    if not os.path.isdir(dest_dir): 
         os.makedirs(dest_dir)
     for path in path_list:
         shutil.copy(path, dest_dir) 
@@ -39,17 +47,23 @@ def copy_to(path_list, dest_dir):
 
 
 def zip_to(path_list, dest_zip):
+    """Given a list of paths and destination directory, 
+    copies those into destination only if it exist
+    """
+    print("Command I'm going to do:")
     for path in path_list:
         print(f'zip -j {dest_zip} {path}')
-        subprocess.run(['zip', '-j', dest_zip, path]) #google this !!!!
+        # google this !!!!
+        subprocess.run(['zip', '-j', dest_zip, path])
     return
 
 
 def main(args):
     """Main driver code for copyspecial."""
     # This snippet will help you get started with the argparse module.
-    parser = argparse.ArgumentParser() # -- or - is optional but with out is required or positional
-    parser.add_argument('--todir', help='dest dir for special files') 
+    parser = argparse.ArgumentParser()
+    # -- or - is optional but with out is required or positional
+    parser.add_argument('--todir', help='dest dir for special files')
     parser.add_argument('--tozip', help='dest zipfile for special files')
     # TODO: add one more argument definition to parse the 'from_dir' argument
     parser.add_argument('from_dir', help='find dir for special files')
@@ -63,18 +77,22 @@ def main(args):
     # any required args, the general rule is to print a usage message and
     # exit(1).
 
-    if len(sys.argv) < 1:
+    if not ns:
         parser.print_usage()
-    path_list = get_special_paths(ns.from_dir) #ns.from_dir this get files in directory given
-    if ns.todir: 
+        sys.exit(1)
+    # ns.from_dir this get files in directory given
+    path_list = get_special_paths(ns.from_dir)
+    if ns.todir:
         copy_to(path_list, ns.todir)
         # print(ns.todir)
-    elif ns.tozip:
+    if ns.tozip:
         zip_to(path_list, ns.tozip)
-    else:
+    if not ns.todir and not ns.tozip:
+        # print("\n".join(special_paths))
         print(*path_list, sep='\n')
         # for path in path_list:
         #     print(path)
+
 
 if __name__ == "__main__":
     main(sys.argv[1:])
