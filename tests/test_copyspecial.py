@@ -110,7 +110,7 @@ class TestCopyspecial(unittest.TestCase):
         actual_path_list = self.module.get_special_paths('.')
         expected_path_list = [
             os.path.abspath(os.path.join(os.getcwd(), f))
-            for f in(os.listdir('.'))
+            for f in (os.listdir('.'))
             if SPL_REGEX.search(f)
             ]
         self.assertIsInstance(
@@ -121,12 +121,15 @@ class TestCopyspecial(unittest.TestCase):
 
     def test_get_special_paths_2(self):
         """Checking against hard-coded path names"""
+        # self.module refers to copyspecial.py
+        # self.rfs.tmp_dir creates temp directory
         actual_path_list = self.module.get_special_paths(self.rfs.tmp_dir)
         self.assertIsInstance(
             actual_path_list, list,
             "get_special_paths is not returning a list"
             )
         a = sorted(actual_path_list)
+
         b = sorted(self.rfs.spl_file_list)
         self.assertListEqual(
             a, b,
@@ -205,7 +208,7 @@ class TestCopyspecial(unittest.TestCase):
 
     def test_main_zip_to(self):
         """Check if main() function performs a zip compression"""
-        to_zip = "/tmp/kenzie-copyspl-zipfile.zip"
+        to_zip = "kenzie-copyspl-zipfile.zip"
         self.clean(to_zip)
         args = ["--tozip", to_zip, self.rfs.tmp_dir]
         self.module.main(args)
